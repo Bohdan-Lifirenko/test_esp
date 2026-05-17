@@ -1,30 +1,53 @@
 #include "Arduino.h"
 
+#define TIMER_ONE 1000
+#define TIMER_TWO 2000
+
+void Task1(void *pvParameters);
+void Task2(void *pvParameters);
+
 unsigned long lastPrint1 = 0;  // для змінної 1 (1 раз в секунду)
 unsigned long lastPrint2 = 0;  // для змінної 2 (2 рази в секунду)
 
-int variable1 = 10;
-int variable2 = 20;
+int variable1 = 0;
+int variable2 = 0;
 
 void setup() {
   Serial.begin(115200);
   delay(1000);
+
+  xTaskCreate(Task1, "Task1", 1024, NULL, 1, NULL);
+  xTaskCreate(Task2, "Task2", 1024, NULL, 1, NULL);
 }
 
 void loop() {
-  unsigned long currentTime = millis();
   
-  // Вивести змінну 1 (кожну 1000мс = 1 раз в секунду)
-  if (currentTime - lastPrint1 >= 1000) {
+}
+
+void Task1(void *pvParameters) {
+  while (1)
+  {
+    lastPrint1 = millis();
+    variable1++;
+
     Serial.print("Variable 1: ");
     Serial.println(variable1);
-    lastPrint1 = currentTime;
+
+    delay(TIMER_ONE);
   }
   
-  // Вивести змінну 2 (кожну 500мс = 2 рази в секунду)
-  if (currentTime - lastPrint2 >= 500) {
+}
+
+void Task2(void *pvParameters) {
+  while (1)
+  {
+    lastPrint2 = millis();
+    variable2++;
+
     Serial.print("Variable 2: ");
     Serial.println(variable2);
-    lastPrint2 = currentTime;
+
+    delay(TIMER_TWO);
   }
+  
 }
